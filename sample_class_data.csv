@@ -1,0 +1,11 @@
+StudentID,Name,Subject1,Subject2,Subject3,Subject4,Subject5,Subject6,Subject7,Subject8,Attendance,Assignments
+S001,John Smith,85,90,78,82,75,88,92,86,92,9
+S002,Emma Johnson,65,70,62,68,55,72,75,68,78,7
+S003,Michael Brown,45,50,42,48,35,52,55,48,62,5
+S004,Sarah Davis,90,88,85,92,80,90,88,87,95,10
+S005,David Wilson,58,62,55,60,48,65,68,60,72,6
+S006,Lisa Martinez,75,80,70,78,65,82,85,76,85,8
+S007,James Anderson,35,40,32,38,28,42,45,36,55,4
+S008,Mary Taylor,88,92,82,86,78,90,92,85,90,9
+S009,Robert Thomas,68,72,60,70,58,75,78,68,76,7
+S010,Jennifer White,42,45,38,48,32,50,52,44,60,4

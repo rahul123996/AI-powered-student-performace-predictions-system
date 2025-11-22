@@ -1,0 +1,15 @@
+Flask
+pandas
+numpy
+scikit-learn
+werkzeug
+Flask
+numpy
+pandas
+scikit-learn
+werkzeug
+matplotlib
+openpyxl
+reportlab
+seaborn
+gunicorn

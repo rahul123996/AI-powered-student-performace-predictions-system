@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Performance Dashboard - RGPV</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        .dashboard-nav {
+            background: #003366;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .dashboard-nav a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 15px;
+            margin: 0 5px;
+            border-radius: 5px;
+        }
+        .dashboard-nav a:hover {
+            background: #005599;
+        }
+        .performance-card {
+            background: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .metric-box {
+            display: inline-block;
+            background: #f0f8ff;
+            padding: 15px 25px;
+            margin: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #007BFF;
+        }
+        .metric-box h3 {
+            margin: 0;
+            color: #003366;
+            font-size: 28px;
+        }
+        .metric-box p {
+            margin: 5px 0 0 0;
+            color: #666;
+        }
+        .subject-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .subject-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+        }
+        .subject-card.weak {
+            border-left-color: #dc3545;
+            background: #fff5f5;
+        }
+        .subject-card.needs-improvement {
+            border-left-color: #ffc107;
+            background: #fffbf0;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status-strong {
+            background: #28a745;
+            color: white;
+        }
+        .status-needs-improvement {
+            background: #ffc107;
+            color: #333;
+        }
+        .status-weak {
+            background: #dc3545;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-nav">
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="{{ url_for('student_dashboard') }}" class="active">Student Dashboard</a>
+        <a href="{{ url_for('teacher_dashboard') }}">Teacher Dashboard</a>
+        <a href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a>
+    </div>
+
+    <div class="container">
+        <header>
+            <img src="/static/logo.png" alt="University Logo" class="logo">
+            <h1>Student Performance Dashboard</h1>
+            <p>Get personalized performance predictions and improvement recommendations</p>
+        </header>
+
+        <div class="form-card">
+            <h2>Enter Your Academic Details</h2>
+            <form action="{{ url_for('student_predict') }}" method="post">
+                <h3>Subject Marks</h3>
+                {% for key, value in max_marks.items() %}
+                    {% if key not in ['Attendance', 'Assignments'] %}
+                        <div class="input-group">
+                            <label>{{ subject_names.get(key, key) }} (Max: {{ value }}):</label>
+                            <input type="number" name="{{ key }}" max="{{ value }}" min="0" value="0" required>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+                
+                <h3>Attendance & Assignments</h3>
+                <div class="input-group">
+                    <label>Attendance (%) (Max: 100):</label>
+                    <input type="number" name="Attendance" max="100" min="0" value="0" required>
+                </div>
+                <div class="input-group">
+                    <label>Assignments Completed (Max: {{ max_marks['Assignments'] }}):</label>
+                    <input type="number" name="Assignments" max="{{ max_marks['Assignments'] }}" min="0" value="0" required>
+                </div>
+                
+                <button type="submit" class="btn">Predict My Performance</button>
+            </form>
+        </div>
+
+        {% if prediction %}
+            <div class="result-card">
+                <h2>Your Performance Prediction</h2>
+                
+                <div style="text-align: center;">
+                    <div class="metric-box">
+                        <h3>{{ prediction }}</h3>
+                        <p>Predicted Category</p>
+                    </div>
+                    <div class="metric-box">
+                        <h3>{{ total_marks }}/490</h3>
+                        <p>Total Marks</p>
+                    </div>
+                    <div class="metric-box">
+                        <h3>{{ percentage }}%</h3>
+                        <p>Percentage</p>
+                    </div>
+                    <div class="metric-box">
+                        <h3>{{ attendance }}%</h3>
+                        <p>Attendance</p>
+                    </div>
+                </div>
+
+                <div class="performance-card">
+                    <h3>Personalized Recommendations</h3>
+                    <p style="font-size: 16px; line-height: 1.6;">{{ suggestion }}</p>
+                </div>
+
+                {% if subject_performance %}
+                    <div class="performance-card">
+                        <h3>Subject-wise Performance Analysis</h3>
+                        <div class="subject-grid">
+                            {% for subj_name, perf in subject_performance.items() %}
+                                <div class="subject-card {% if perf.status == 'Weak' %}weak{% elif perf.status == 'Needs Improvement' %}needs-improvement{% endif %}">
+                                    <h4>{{ subj_name }}</h4>
+                                    <p><strong>Marks:</strong> {{ perf.marks }}/{{ perf.max }} ({{ perf.percentage }}%)</p>
+                                    <span class="status-badge status-{{ perf.status|lower|replace(' ', '-') }}">{{ perf.status }}</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div class="performance-card">
+                    <h3>Next Steps</h3>
+                    <ul style="text-align: left; font-size: 15px;">
+                        {% if attendance < 75 %}
+                            <li>Improve your attendance to at least 75% for better performance</li>
+                        {% endif %}
+                        {% if assignments < max_marks['Assignments'] %}
+                            <li>Complete all pending assignments</li>
+                        {% endif %}
+                        <li>Focus on weak subjects through additional practice</li>
+                        <li>Attend doubt-clearing sessions regularly</li>
+                        <li>Form study groups with peers for collaborative learning</li>
+                    </ul>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

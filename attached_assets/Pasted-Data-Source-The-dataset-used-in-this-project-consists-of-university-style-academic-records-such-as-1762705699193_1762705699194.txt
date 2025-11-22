@@ -1,0 +1,27 @@
+Data Source:
+The dataset used in this project consists of university-style academic records such as attendance percentage, internal marks, assignment scores, CGPA, and study hours. All the records were self-created and curated by the project team to simulate real academic scenarios. No real student personal or institutional data was used. The dataset was anonymized and generated specifically for machine learning model training and performance evaluation.
+Prediction Goals:
+The AI-based system predicts student academic performance with the following goals:
+
+Categorizing students into Strong, Needs Improvement, and At-Risk based on their academic indicators.
+Predicting overall semester results including pass/fail likelihood.
+Identifying subject-wise weak areas for targeted improvement.
+Estimating future performance trends based on current progression.
+Analyzing the impact of attendance and study habits on final outcomes.
+Providing personalized recommendations to improve student performance.
+Dashboard Requirements:
+The proposed system includes three dashboards catering to different user roles:
+Teacher Dashboard:
+Displays class-level analytics including pass/fail/at-risk distribution, subject-wise weaknesses, and attendance impact charts. Teachers can monitor overall academic performance and generate reports for academic planning.
+Student Dashboard:
+Provides personalized performance prediction, improvement suggestions, subject-wise feedback, growth forecast, and study recommendations. Students can monitor their own progress and take corrective actions.
+Admin Dashboard:
+Allows management of entire university/class data, bulk uploads, performance overview of all batches and semesters, analytics visualization, and role-based access control.
+These dashboards together create a complete Academic Decision Support System powered by AI.
+Key Features:
+The system provides:
+• Academic performance prediction (Strong / Needs Improvement / At-Risk)
+• Class average comparison and performance trend analysis
+• Personalized study improvement recommendations
+• PDF/Excel report export for faculty usage
+• Early risk alerts for low-performing students

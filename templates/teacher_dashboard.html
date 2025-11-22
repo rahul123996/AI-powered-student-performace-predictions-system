@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teacher Dashboard - RGPV</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        .dashboard-nav {
+            background: #003366;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .dashboard-nav a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 15px;
+            margin: 0 5px;
+            border-radius: 5px;
+        }
+        .dashboard-nav a:hover, .dashboard-nav a.active {
+            background: #005599;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .stat-card h3 {
+            font-size: 36px;
+            margin: 10px 0;
+            color: #003366;
+        }
+        .stat-card p {
+            color: #666;
+            margin: 0;
+        }
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .chart-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .chart-card img {
+            max-width: 100%;
+            height: auto;
+        }
+        .action-buttons {
+            margin: 20px 0;
+        }
+        .action-buttons a, .action-buttons button {
+            margin: 5px;
+        }
+        .alert-section {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-nav">
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="{{ url_for('student_dashboard') }}">Student Dashboard</a>
+        <a href="{{ url_for('teacher_dashboard') }}" class="active">Teacher Dashboard</a>
+        <a href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a>
+    </div>
+
+    <div class="container">
+        <header>
+            <img src="/static/logo.png" alt="University Logo" class="logo">
+            <h1>Teacher Dashboard</h1>
+            <p>Upload class data for batch predictions and comprehensive analytics</p>
+        </header>
+
+        <div class="form-card">
+            <h2>Upload Class Data (CSV/Excel)</h2>
+            <p><strong>Required Columns:</strong> StudentID, Name, Subject1, Subject2, Subject3, Subject4, Subject5, Subject6, Subject7, Subject8, Attendance, Assignments</p>
+            <p><strong>Download Sample:</strong> <a href="/download/sample_class_data.csv" style="color: #007BFF;">sample_class_data.csv</a></p>
+            <p><strong>Maximum:</strong> 200 students per file</p>
+            
+            <form action="{{ url_for('predict_batch') }}" method="post" enctype="multipart/form-data">
+                <input type="file" name="file" accept=".csv,.xlsx" required style="margin: 15px 0;">
+                <button type="submit" class="btn">Upload & Analyze</button>
+            </form>
+        </div>
+
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <div class="alert-section">
+                {% for message in messages %}
+                  <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        {% if total_count %}
+            <div class="result-card">
+                <h2>Class Analytics - {{ total_count }} Students</h2>
+                
+                {% if stats %}
+                    <div class="stats-grid">
+                        <div class="stat-card" style="border-top: 4px solid #28a745;">
+                            <h3>{{ stats.strong_count }}</h3>
+                            <p>Strong Performers</p>
+                        </div>
+                        <div class="stat-card" style="border-top: 4px solid #ffc107;">
+                            <h3>{{ stats.needs_improvement }}</h3>
+                            <p>Needs Improvement</p>
+                        </div>
+                        <div class="stat-card" style="border-top: 4px solid #dc3545;">
+                            <h3>{{ stats.at_risk }}</h3>
+                            <p>At Risk</p>
+                        </div>
+                        <div class="stat-card" style="border-top: 4px solid #007BFF;">
+                            <h3>{{ "%.1f"|format(stats.avg_marks) }}</h3>
+                            <p>Average Marks</p>
+                        </div>
+                        <div class="stat-card" style="border-top: 4px solid #17a2b8;">
+                            <h3>{{ "%.1f"|format(stats.avg_attendance) }}%</h3>
+                            <p>Average Attendance</p>
+                        </div>
+                        <div class="stat-card" style="border-top: 4px solid #6c757d;">
+                            <h3>{{ stats.low_attendance }}</h3>
+                            <p>Low Attendance (<75%)</p>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div class="action-buttons">
+                    <a href="{{ url_for('download_file', filename=result_file) }}" class="btn-link">Download CSV Report</a>
+                    {% if excel_file %}
+                        <a href="{{ url_for('download_report', filename=excel_file) }}" class="btn-link">Download Excel Report</a>
+                    {% endif %}
+                    {% if result_file %}
+                        <a href="{{ url_for('generate_pdf', csv_filename=result_file) }}" class="btn-link">Generate PDF Report</a>
+                    {% endif %}
+                </div>
+
+                {% if charts %}
+                    <h3>Visual Analytics</h3>
+                    <div class="charts-container">
+                        <div class="chart-card">
+                            <h4>Performance Distribution</h4>
+                            <img src="data:image/png;base64,{{ charts.performance_pie }}" alt="Performance Distribution">
+                        </div>
+                        <div class="chart-card">
+                            <h4>Subject-wise Class Average</h4>
+                            <img src="data:image/png;base64,{{ charts.subject_bar }}" alt="Subject Performance">
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if at_risk and at_risk|length > 0 %}
+                    <div class="alert-section" style="border-left-color: #dc3545; background: #f8d7da;">
+                        <h3 style="color: #721c24; margin-top: 0;">Early Risk Alerts - {{ at_risk|length }} Students</h3>
+                        <p style="color: #721c24;">The following students require immediate attention and support:</p>
+                        <table style="margin-top: 15px;">
+                            <tr>
+                                <th>Student ID</th>
+                                <th>Name</th>
+                                <th>Total Marks</th>
+                                <th>Attendance</th>
+                                <th>Suggestion</th>
+                            </tr>
+                            {% for student in at_risk[:10] %}
+                            <tr>
+                                <td>{{ student.StudentID }}</td>
+                                <td>{{ student.Name }}</td>
+                                <td>{{ "%.0f"|format(student.total_marks) }}</td>
+                                <td>{{ "%.0f"|format(student.Attendance) }}%</td>
+                                <td>{{ student.suggestion[:100] }}...</td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                {% endif %}
+
+                <h3>Top 10 Students</h3>
+                <table>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Student ID</th>
+                        <th>Name</th>
+                        <th>Total Marks</th>
+                        <th>Performance</th>
+                        <th>Attendance</th>
+                    </tr>
+                    {% for student in top10 %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ student.StudentID }}</td>
+                        <td>{{ student.Name }}</td>
+                        <td>{{ "%.0f"|format(student.total_marks) }}</td>
+                        <td>{{ student.predicted_label }}</td>
+                        <td>{{ "%.0f"|format(student.Attendance) }}%</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+
+                <h3>Bottom 10 Students</h3>
+                <table>
+                    <tr>
+                        <th>Student ID</th>
+                        <th>Name</th>
+                        <th>Total Marks</th>
+                        <th>Performance</th>
+                        <th>Attendance</th>
+                        <th>Action Required</th>
+                    </tr>
+                    {% for student in bottom10 %}
+                    <tr>
+                        <td>{{ student.StudentID }}</td>
+                        <td>{{ student.Name }}</td>
+                        <td>{{ "%.0f"|format(student.total_marks) }}</td>
+                        <td>{{ student.predicted_label }}</td>
+                        <td>{{ "%.0f"|format(student.Attendance) }}%</td>
+                        <td>
+                            {% if student.Attendance < 75 %}
+                                Monitor Attendance |
+                            {% endif %}
+                            Counseling Needed
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>RGPV Student Performance Predictor</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        .dashboard-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .dashboard-link-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            text-align: center;
+            transition: transform 0.3s;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        .dashboard-link-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+        .dashboard-link-card h3 {
+            color: #003366;
+            margin: 15px 0 10px 0;
+            font-size: 24px;
+        }
+        .dashboard-link-card p {
+            color: #666;
+            margin: 0;
+        }
+        .icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        .feature-list {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+        .feature-list ul {
+            list-style: none;
+            padding: 0;
+        }
+        .feature-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .feature-list li:before {
+            content: "✓ ";
+            color: #28a745;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <img src="/static/logo.png" alt="University Logo" class="logo">
+            <h1>Academic Performance Prediction System</h1>
+            <p style="font-size: 18px; color: #555;">AI-Powered Academic Decision Support System</p>
+        </header>
+
+        <div class="dashboard-links">
+            <a href="{{ url_for('student_dashboard') }}" class="dashboard-link-card">
+                <div class="icon">📚</div>
+                <h3>Student Dashboard</h3>
+                <p>Get personalized performance predictions and study recommendations</p>
+            </a>
+
+            <a href="{{ url_for('teacher_dashboard') }}" class="dashboard-link-card">
+                <div class="icon">👩‍🏫</div>
+                <h3>Teacher Dashboard</h3>
+                <p>Upload class data, view analytics, and generate reports</p>
+            </a>
+
+            <a href="{{ url_for('admin_dashboard') }}" class="dashboard-link-card">
+                <div class="icon">⚙️</div>
+                <h3>Admin Dashboard</h3>
+                <p>Manage system-wide data and oversee all batches</p>
+            </a>
+        </div>
+
+        <div class="feature-list">
+            <h2 style="color: #003366;">Key Features</h2>
+            <ul>
+                <li>Academic performance prediction (Strong / Needs Improvement / At-Risk)</li>
+                <li>Personalized study improvement recommendations</li>
+                <li>Subject-wise performance analysis and weak area identification</li>
+                <li>Class average comparison and performance trend analysis</li>
+                <li>Early risk alerts for low-performing students</li>
+                <li>Attendance and assignment tracking</li>
+                <li>Visual analytics with charts and graphs</li>
+                <li>PDF/Excel report export for faculty usage</li>
+                <li>Batch processing for up to 200 students</li>
+                <li>Role-based dashboards for students, teachers, and administrators</li>
+            </ul>
+        </div>
+
+        <div class="result-card">
+            <h2>About the System</h2>
+            <p style="font-size: 16px; line-height: 1.8;">
+                This Academic Decision Support System uses machine learning to predict student academic performance 
+                based on internal marks, attendance, and assignment completion. The system helps identify at-risk 
+                students early and provides personalized recommendations for improvement. Teachers can upload entire 
+                class data for comprehensive analytics, while students can get individual performance insights.
+            </p>
+            <p style="font-size: 16px; line-height: 1.8; margin-top: 15px;">
+                <strong>Prediction Goals:</strong> Categorizing students into performance groups, predicting semester 
+                results, identifying subject-wise weak areas, estimating future performance trends, and analyzing the 
+                impact of attendance and study habits on outcomes.
+            </p>
+        </div>
+    </div>
+</body>
+</html>
